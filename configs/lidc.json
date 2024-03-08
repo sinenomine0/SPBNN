@@ -43,7 +43,7 @@
             "batch_size": 10,
             "run_val": true, 
             "train_val_split": 0.7,
-            "kfold": 1, 
+            "kfold": 4, 
             "seed": 0,
             "loss_func": "ce"
         },
