@@ -6,8 +6,6 @@ from collections.abc import Iterable
 import torch.nn as nn
 import torch.nn.functional as F
 import matplotlib.pyplot as plt
-import helpers.cityscapes.get_classes as get_classes
-import helpers.mbrats as mbrats
 import helpers.isic_dataset as isic
 
 """==================================================="""
@@ -780,72 +778,48 @@ def save_pred(input, target, output, epoch, output_path, dataset, train=True, *a
 		posterior = True
 		variance = output.var(dim=0)
 		output = output.mean(dim=0)		
-	if dataset.upper() == 'CITYSCAPES':
-		output = torch.argmax(output, dim=1).detach().cpu()
-		# target = torch.argmax(target, dim=1).detach().cpu()
-		target = target.detach().cpu()
-		convert = get_classes.EncodeSegMap()
-		_, axarr = plt.subplots(num_samples, 3, gridspec_kw = {'wspace':0.01, 'hspace':0.01})
-		for i in range(num_samples):
-			if num_samples != 1:
-				i1, i2, i3, i4, i5, i6  = (i, 0), (i, 1), (i, 2), (i, 3), (i, 4), (i, 5)
-			else:
-				i1, i2, i3, i4, i5, i6 = 0, 1, 2, 3, 4, 5
 
-			img = convert.invert_img_norm(input[i])
-			label = convert.decode_segmap(target[i])
-			pred = convert.decode_segmap(output[i])
-			axarr[i1].imshow(img, origin="upper")
-			axarr[i2].imshow(label, origin="upper")
-			axarr[i3].imshow(pred, origin="upper")
-	else: 
-		cols = 5 if args else 4
-		cols += 1 if posterior else 0
-		_, axarr = plt.subplots(num_samples, cols, gridspec_kw = {'wspace':0.02, 'hspace':0})
-		for i in range(num_samples):	
-			if num_samples != 1:
-				i1, i2, i3, i4, i5, i6  = (i, 0), (i, 1), (i, 2), (i, 3), (i, 4), (i, 5)
-			else:
-				i1, i2, i3, i4, i5, i6 = 0, 1, 2, 3, 4, 5
-			
-			img = input[i].squeeze(0).cpu().numpy()
-			cmap_in = 'gray'
-			if dataset.upper() == 'ISIC':
-				img = isic.invert_img_norm(input[i])
-				cmap_in = 'viridis' 
-			if dataset.upper() == 'MBRATS':
-				label = mbrats.decode_segmap(target[i].cpu().numpy())
-				conf = torch.max(output[i], dim=0)[0].detach().cpu().numpy()
-				binary = output[i] > 0.5
-				pred = mbrats.decode_segmap(binary.cpu().numpy())
-				cmap = 'RdYlBu'
-			else:
-				label = target[i][tar_idx].squeeze(0).cpu().numpy()
-				conf = output[i][tar_idx].detach().squeeze(0).cpu().numpy() 
-				pred = output[i][tar_idx].detach().squeeze(0).cpu().numpy() > 0.5
-				cmap = 'gray'
-			axarr[i1].imshow(img, cmap=cmap_in, origin="lower")
-			axarr[i2].imshow(label, cmap=cmap, origin="lower")	
-			axarr[i3].imshow(pred, cmap=cmap, origin="lower")
+	cols = 5 if args else 4
+	cols += 1 if posterior else 0
+	_, axarr = plt.subplots(num_samples, cols, gridspec_kw = {'wspace':0.02, 'hspace':0})
+	for i in range(num_samples):	
+		if num_samples != 1:
+			i1, i2, i3, i4, i5, i6  = (i, 0), (i, 1), (i, 2), (i, 3), (i, 4), (i, 5)
+		else:
+			i1, i2, i3, i4, i5, i6 = 0, 1, 2, 3, 4, 5
+		
+		img = input[i].squeeze(0).cpu().numpy()
+		cmap_in = 'gray'
+		if dataset.upper() == 'ISIC':
+			img = isic.invert_img_norm(input[i])
+			cmap_in = 'viridis' 
+		else:
+			label = target[i][tar_idx].squeeze(0).cpu().numpy()
+			conf = output[i][tar_idx].detach().squeeze(0).cpu().numpy() 
+			pred = output[i][tar_idx].detach().squeeze(0).cpu().numpy() > 0.5
+			cmap = 'gray'
+		axarr[i1].imshow(img, cmap=cmap_in, origin="lower")
+		axarr[i2].imshow(label, cmap=cmap, origin="lower")	
+		axarr[i3].imshow(pred, cmap=cmap, origin="lower")
+		if i == 0:
+			axarr[i1].title.set_text('input')
+			axarr[i2].title.set_text('target')
+			axarr[i3].title.set_text('pred')	
+		if cols > 3:
+			axarr[i4].imshow(conf, cmap='gray', origin="lower")
+			if args:
+				uncert_gt = args[0][i].detach().squeeze(0).cpu().numpy()
+				axarr[i5].imshow(uncert_gt, cmap='seismic', origin="lower")
 			if i == 0:
-				axarr[i1].title.set_text('input')
-				axarr[i2].title.set_text('target')
-				axarr[i3].title.set_text('pred')	
-			if cols > 3:
-				axarr[i4].imshow(conf, cmap='gray', origin="lower")
+				axarr[i4].title.set_text('conf')
 				if args:
-					uncert_gt = args[0][i].detach().squeeze(0).cpu().numpy()
-					axarr[i5].imshow(uncert_gt, cmap='seismic', origin="lower")
+					axarr[i5].title.set_text('gt_u')
+			if posterior:
+				uncert_idx = i6 if args else i5
+				uncert_pred = variance[i][tar_idx].detach().squeeze(0).cpu().numpy()
+				axarr[uncert_idx].imshow(uncert_pred, cmap='seismic', origin="lower")
 				if i == 0:
-					axarr[i4].title.set_text('conf')
-					if args:
-						axarr[i5].title.set_text('gt_u')
-				if posterior:
-					uncert_idx = i6 if args else i5
-					uncert_pred = variance[i][tar_idx].detach().squeeze(0).cpu().numpy()
-					axarr[uncert_idx].imshow(uncert_pred, cmap='seismic', origin="lower")
-					if i == 0:
-						axarr[uncert_idx].title.set_text('pred_u')					
+					axarr[uncert_idx].title.set_text('pred_u')					
 
 	for i in range(num_samples):
 		for j in range(cols): 
