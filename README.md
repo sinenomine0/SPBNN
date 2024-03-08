@@ -17,6 +17,7 @@ To train a partial Bayes model:
 - scikit-learn 1.2.2
 - medMNIST
 - h5py
+- pydicom
 
 #### System Requirement:
 - CUDA v. > 11.7 (to be compatible with Pytorch 2)
