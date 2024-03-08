@@ -793,11 +793,10 @@ def save_pred(input, target, output, epoch, output_path, dataset, train=True, *a
 		if dataset.upper() == 'ISIC':
 			img = isic.invert_img_norm(input[i])
 			cmap_in = 'viridis' 
-		else:
-			label = target[i][tar_idx].squeeze(0).cpu().numpy()
-			conf = output[i][tar_idx].detach().squeeze(0).cpu().numpy() 
-			pred = output[i][tar_idx].detach().squeeze(0).cpu().numpy() > 0.5
-			cmap = 'gray'
+		label = target[i][tar_idx].squeeze(0).cpu().numpy()
+		conf = output[i][tar_idx].detach().squeeze(0).cpu().numpy() 
+		pred = output[i][tar_idx].detach().squeeze(0).cpu().numpy() > 0.5
+		cmap = 'gray'
 		axarr[i1].imshow(img, cmap=cmap_in, origin="lower")
 		axarr[i2].imshow(label, cmap=cmap, origin="lower")	
 		axarr[i3].imshow(pred, cmap=cmap, origin="lower")
