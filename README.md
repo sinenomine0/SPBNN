@@ -13,7 +13,8 @@ To train a partial Bayes model:
 #### Used Packages: 
 - Python > 3.8
 - Pytorch > 2.0.1
-- see requirements.txt file for more details
+- use `environment.yml` to create the environment with the required packages 
+    - run ```conda env create --file environment.yml```
 
 #### System Requirement:
 - CUDA v. > 11.7 (to be compatible with Pytorch 2)
