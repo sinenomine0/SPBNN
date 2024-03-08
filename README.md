@@ -8,6 +8,7 @@ To train a partial Bayes model:
 2. Train partial Bayes model by changing the following in the config file:
     1. Set network_type to "partial_bayesian"
     2. Set "init_network" in Partial Bayesian Parameters to the path to your trained deterministic model, e.g., "run_20240202_101010"
+    3. ```python train.py --base_setup "config.json"``` with updated config
 
 #### Used Packages: 
 - Python > 3.8
