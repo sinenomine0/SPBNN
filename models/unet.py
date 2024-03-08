@@ -45,7 +45,7 @@ class DownConvBlock(nn.Module):
 class UpConvBlock(nn.Module):
 	"""
 	A block consists of an upsampling layer followed by a convolutional layer to reduce the amount of channels and then a DownConvBlock
-	If bilinear is set to false, we do a transposed convolution instead of upsampling
+	If bilinear is set to true upsampling is used, if false - transpose is used - however cannot be used for partial bayes
 	"""
 	def __init__(self, in_channels: int, out_channels: int, padding: int=0, interpolate: bool=True, batch_norm: bool=True):
 		super().__init__()
@@ -180,7 +180,7 @@ class BayesDownConvBlock(nn.Module):
 class BayesUpConvBlock(nn.Module):
 	"""
 	A block consists of an upsampling layer followed by a convolutional layer to reduce the amount of channels and then a DownConvBlock
-	If bilinear is set to false, we do a transposed convolution instead of upsampling
+	If bilinear is set to true - bilinear interpolation is done - transpose conv custom bayes layer is not implemented
 	"""
 	def __init__(self, in_channels, out_channels, padding, add_bias: bool=True,
 			  prior_mu: float=0., prior_variance: float=1., posterior_mu: float=0.,
