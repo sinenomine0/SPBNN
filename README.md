@@ -1,4 +1,4 @@
-# Sparse Partial Bayesian NN 
+# SPBNN 
 Create folders: "datasets" and "output" in the main dir
 
 To train a partial Bayes model: 
