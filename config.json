@@ -1,0 +1,79 @@
+{
+    "Network": {
+        "Basic Setup": {
+            "network_type": "deterministic",
+            "architecture": "unet",
+            "layer_type": "conv", 
+            "task": "segmentation",
+            "input_size": 128,
+            "feature_size": [32,64,128,192],
+            "output_size": 2,
+            "kernel_size": 3, 
+            "padding_size": 1,
+            "pooling_size": 0, 
+            "stride": 2,
+            "nonlinearity": "relu",
+            "init_weights": "kaiming_n",
+            "use_batchnorm": true,
+            "dropout": 0,
+            "bias": true
+        },
+        "Optional": {
+            "Sparsity":{
+                "sparse": false, 
+                "random": true,
+                "rate": 0.8
+                }
+        }
+    },
+    "Training": {
+        "Basic Setup": {
+            "init_network": "", 
+            "continue_run": false,
+            "dataset": "lidc",
+            "num_points": 50000
+        },
+        "Basic Parameters": {
+            "num_epochs": 500,
+            "optimizer": "adam", 
+            "lr": 0.001, 
+            "weight_decay": 1e-5,
+            "gpu": 0,
+            "num_workers": 0,
+            "batch_size": 10,
+            "run_val": false, 
+            "train_val_split": 0.7,
+            "kfold": 1, 
+            "seed": 0,
+            "loss_func": "bce"
+        },
+        "LR Scheduler":{
+            "scheduler_type": "step",
+            "step_size": 30,
+            "gamma": 0.1
+        },
+        "Bayesian Parameters": {
+            "kl_weight": 0.01, 
+            "kl_weight_hi2low": true,
+            "kl_weight_lim": [0.01, 0.2],
+            "prior_mu": 0.0, 
+            "prior_variance": 1.0,  
+            "posterior_mu": 0, 
+            "posterior_rho": -3,
+            "num_samples": 5
+        },
+        "Partial Bayesian Parameters": {
+            "init_network": "",
+            "fit_variance_only": false,
+            "bayesian_rate": 0.9, 
+            "largest_grad": true, 
+            "node_analysis": "sensitivity_analysis",
+            "select_random_node": false
+        }
+    },
+    "Paths": {
+            "dataset_path": "", 
+            "training_path": "",
+            "save_path": ""
+        }
+}
