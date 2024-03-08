@@ -4,7 +4,7 @@
             "network_type": "deterministic",
             "architecture": "resnet18",
             "layer_type": "conv", 
-            "task": "segmentation",
+            "task": "classification",
             "input_size": 224,
             "feature_size": [1, 64, 128, 256, 512],
             "output_size": 14,
