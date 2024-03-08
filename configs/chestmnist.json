@@ -65,7 +65,7 @@
         "Partial Bayesian Parameters": {
             "init_network": "",
             "fit_variance_only": false,
-            "bayesian_rate": 0.9, 
+            "bayesian_rate": 0.01, 
             "largest_grad": true, 
             "node_analysis": "sensitivity_analysis",
             "select_random_node": false
