@@ -13,11 +13,7 @@ To train a partial Bayes model:
 #### Used Packages: 
 - Python > 3.8
 - Pytorch > 2.0.1
-- tqdm 4.65.0
-- scikit-learn 1.2.2
-- medMNIST
-- h5py
-- pydicom
+- see requirements.txt file for more details
 
 #### System Requirement:
 - CUDA v. > 11.7 (to be compatible with Pytorch 2)
