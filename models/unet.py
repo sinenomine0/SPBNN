@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from .bayeslayers import Conv2dReparameterization, ConvTranspose2dReparameterization
+from .bayeslayers import Conv2dReparameterization
 
 
 def initialize_batchNorm(feature_size: int, init_weight:torch.Tensor, init_bias: torch.Tensor, turn_off: bool=True):
@@ -191,35 +191,15 @@ class BayesUpConvBlock(nn.Module):
 
 		self.interpolate = interpolate
 		in_ = in_channels+out_channels
-		if not interpolate:
-			in_ = out_channels*2
-			up_masks, up_params, block_masks, block_params = [], [], [], []
-			if masks!=[]:		
-				num_ = 2 if add_bias else 1
-				up_masks, up_params = masks[:num_], init_params[:num_]
-				block_masks, block_params = masks[num_:], init_params[num_:]
-			self.upconv_layer = ConvTranspose2dReparameterization(in_channels=in_channels, out_channels=out_channels, kernel_size=2, 
-																	stride=2, prior_mean=prior_mu, prior_variance=prior_variance, 
-																	posterior_mu_init=posterior_mu, posterior_rho_init=posterior_rho, 
-																	sparse=sparse, mask=up_masks, init_param=up_params, test=test,
-																	fit_variance_only=fit_variance_only)
-		else:
-			block_masks, block_params = masks, init_params
+
+		block_masks, block_params = masks, init_params
 		self.convblock = BayesDownConvBlock(in_, out_channels, padding, add_bias, prior_mu, prior_variance, posterior_mu, 
 											 posterior_rho, pool=False, batch_norm=batch_norm, sparse=sparse, masks=block_masks, 
 											 init_params=block_params, test=test, fit_variance_only=fit_variance_only)
 
 	def forward(self, x, bridge, return_kl=True):
 		kl_sum = 0
-		if self.interpolate:
-			up = F.interpolate(x, mode='bilinear', scale_factor=2, align_corners=True)
-		else:
-			if return_kl:
-				up, kl = self.upconv_layer(x)
-				kl_sum = kl_sum + kl
-			else:
-				up = self.upconv_layer(x, return_kl=return_kl)
-		
+		up = F.interpolate(x, mode='bilinear', scale_factor=2, align_corners=True)
 		assert up.shape[3] == bridge.shape[3]
 		out = torch.cat([up, bridge], 1)
 		if return_kl:
