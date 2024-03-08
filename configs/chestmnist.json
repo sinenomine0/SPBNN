@@ -45,7 +45,7 @@
             "train_val_split": 0.7,
             "kfold": 1, 
             "seed": 0,
-            "loss_func": "ce"
+            "loss_func": "bceLogits"
         },
         "LR Scheduler":{
             "scheduler_type": "",
