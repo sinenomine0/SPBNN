@@ -155,10 +155,8 @@ class MaskedConv2dFunction(torch.autograd.Function):
 		# Compute the gradients of the input, weight, and bias tensors
 		grad_input = grad_weight = grad_bias = None
 		if ctx.needs_input_grad[0]:
-			# grad_input = F.conv_transpose2d(grad_output, weight * mask, bias=None)
 			grad_input = torch.nn.grad.conv2d_input(input.shape, weight * mask, grad_output, stride=stride, padding=padding, groups=groups)
 		if ctx.needs_input_grad[1]:
-			# grad_weight = F.conv_transpose2d(grad_output, input, bias=None)
 			grad_weight = torch.nn.grad.conv2d_weight(input, weight.shape, grad_output, stride=stride, padding=padding, groups=groups)
 			# Apply the mask to the weight gradient to make it sparse
 			grad_weight = grad_weight * mask
