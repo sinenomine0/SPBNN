@@ -1,0 +1,13 @@
+# run: conda env create --file environment.yml
+name: spbnn
+dependencies:
+  - python>=3.8
+  - pytorch>=2.0.1
+  - tqdm
+  - scikit-learn==1.2.2
+  - h5py
+  - matplotlib > 3.8.0  
+  - pip:
+    - medmnist 
+    - pydicom  
+  
